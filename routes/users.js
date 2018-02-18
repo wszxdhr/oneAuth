@@ -25,10 +25,18 @@ let auth = async (ctx, token) => {
     token
   })
   if (user && user.length) {
-    ctx.body = {
-      status: 0
+    if (user[0].expiredAt < new Date().valueOf()) {
+      ctx.body = {
+        status: 1,
+        message: 'token失效'
+      }
+      return false
+    } else {
+      ctx.body = {
+        status: 0
+      }
+      return user[0]
     }
-    return user[0]
   } else {
     ctx.body = {
       status: 1,
