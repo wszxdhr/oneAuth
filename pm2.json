@@ -1,0 +1,22 @@
+{
+  "apps" : [{
+    "name" : "one-auth",
+    "script" : "bin/www",
+    "env": {
+      "COMMON_VARIABLE": "true"
+    },
+    "env_production" : {
+      "NODE_ENV": "production"
+    }
+  }],
+  "deploy" : {
+    "production" : {
+      "user" : "root",
+      "host" : "anymelon.com",
+      "ref"  : "origin/master",
+      "repo" : "https://github.com/wszxdhr/oneAuth.git",
+      "path" : "/data/wwwroot/oneAuth",
+      "post-deploy" : "cd /data/wwwroot/oneAuth && cnpm install && pm2 start pm2.json --env production"
+    }
+  }
+}
