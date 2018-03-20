@@ -33,7 +33,8 @@ let auth = async (ctx, token) => {
       return false
     } else {
       ctx.body = {
-        status: 0
+        status: 0,
+        userInfo: user[0]
       }
       return user[0]
     }
@@ -58,13 +59,15 @@ router.get('/user', async (ctx) => {
   const token = ctx.request.query.token
   let user = await auth(ctx, token)
   ctx.body = {
+    status: 0,
     username: user.username,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
     key: {
       token: user.token,
       expiredAt: user.expiredAt
-    }
+    },
+    id: user._id
   }
 })
 
@@ -133,12 +136,9 @@ router.post('/register', async (ctx, next) => {
       status: 1,
       message: '用户名已存在！'
     }
+    next()
   } else {
-    await db.save(err => {
-      console.log(err)
-    })
-    // await db.find({})
-    ctx.body = {
+    let result = {
       status: 0,
       userInfo: {
         username: body.username,
@@ -147,6 +147,15 @@ router.post('/register', async (ctx, next) => {
       },
       key: token
     }
+    await db.save((err, doc) => {
+      if (err) {
+        result = {
+          status: 1,
+          message: '注册失败！'
+        }
+      }
+    })
+    ctx.body = result
   }
 })
 
